@@ -290,10 +290,8 @@ Using automation against a Discord user account may violate Discord's Terms of S
 
 ## License
 
-If you want this project to be open source, you can release it under a license such as MIT:
-
 ```text
-MIT License
+Sincity License
 ```
 
 ---
