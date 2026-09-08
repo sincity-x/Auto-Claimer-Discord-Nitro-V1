@@ -1,17 +1,15 @@
 const WebSocket = require("ws");
 const readline = require("readline");
+const GATEWAY = "wss://gateway.discord.gg/?v=10&encoding=json";
+const API = "https://discord.com/api/v9";
 
-const GATEWAY =
-  "wss://gateway.discord.gg/?v=10&encoding=json";
+/**
+discord.gift/CODE
+https://discord.gift/CODE
+discord.com/gifts/CODE
+https://discord.com/gifts/CODE
+**/
 
-const API =
-  "https://discord.com/api/v9";
-
-// Matches:
-// discord.gift/CODE
-// https://discord.gift/CODE
-// discord.com/gifts/CODE
-// https://discord.com/gifts/CODE
 const giftRegex =
   /(?:https?:\/\/)?(?:www\.)?(?:discord\.gift|discord\.com\/gifts)\/([A-Za-z0-9_-]+)/gi;
 
@@ -36,11 +34,12 @@ let reconnectTimer = null;
 let shuttingDown = false;
 
 /*
- * Discord HTTP API helper.
+ * Discord HTTP API.
  *
- * This authenticates as the bot.
- * It can be used for legitimate Discord bot API requests.
+ * This authenticates as the discord user token.
+ * It can be used for legitimate Discord user token API requests.
  */
+
 async function discord(route, options = {}) {
   if (!token) {
     throw Object.assign(
@@ -71,15 +70,12 @@ async function discord(route, options = {}) {
   }
 
   return {
-    response,
-    data
+    response, data
   };
 }
 
 function log(message) {
-  console.log(
-    `[${new Date().toLocaleTimeString()}] ${message}`
-  );
+  console.log(`[${new Date().toLocaleTimeString()}] ${message}`);
 }
 
 function connect() {
@@ -107,9 +103,7 @@ function connect() {
       handlePacket(packet);
     } catch (err) {
       console.error(
-        "[ERROR] Invalid Gateway packet:",
-        err.message
-      );
+        "[ERROR] Invalid Gateway packet:", err.message);
     }
   });
 
@@ -132,18 +126,12 @@ function connect() {
   });
 
   ws.on("error", err => {
-    console.error(
-      "[Gateway Error]",
-      err.message
-    );
+    console.error("[Gateway Error]", err.message);
   });
 }
 
 function handlePacket(packet) {
-  if (
-    packet.s !== null &&
-    packet.s !== undefined
-  ) {
+  if (packet.s !== null && packet.s !== undefined) {
     sequence = packet.s;
   }
 
@@ -151,21 +139,15 @@ function handlePacket(packet) {
     case 10:
       if (
         packet.d &&
-        typeof packet.d.heartbeat_interval === "number"
-      ) {
-        startHeartbeat(
-          packet.d.heartbeat_interval
-        );
+        typeof packet.d.heartbeat_interval === "number") {
+        startHeartbeat(packet.d.heartbeat_interval);
       }
 
       identify();
       break;
 
     case 0:
-      handleEvent(
-        packet.t,
-        packet.d
-      );
+      handleEvent(packet.t, packet.d);
       break;
 
     case 1:
@@ -184,9 +166,7 @@ function handlePacket(packet) {
       break;
 
     case 9:
-      console.error(
-        "[ERROR] Discord invalidated the session."
-      );
+      console.error("[ERROR] Discord invalidated the session.");
 
       if (heartbeat) {
         clearInterval(heartbeat);
@@ -218,10 +198,7 @@ function startHeartbeat(interval) {
 }
 
 function sendHeartbeat() {
-  if (
-    !ws ||
-    ws.readyState !== WebSocket.OPEN
-  ) {
+  if ( !ws || ws.readyState !== WebSocket.OPEN) {
     return;
   }
 
@@ -234,10 +211,8 @@ function sendHeartbeat() {
 }
 
 function identify() {
-  if (
-    !ws ||
-    ws.readyState !== WebSocket.OPEN
-  ) {
+
+  if (!ws ||ws.readyState !== WebSocket.OPEN) {
     return;
   }
 
@@ -260,16 +235,14 @@ function identify() {
 
         properties: {
           os: "windows",
-          browser: "discord-code-monitor",
-          device: "discord-code-monitor"
+          browser: "discord-nitro",
+          device: "discord-nitro"
         }
       }
     })
   );
 
-  log(
-    "Bot identified with Discord Gateway."
-  );
+  log("Bot identified with Discord Gateway.");
 }
 
 function handleEvent(event, data) {
@@ -277,23 +250,14 @@ function handleEvent(event, data) {
 
     console.clear();
 
-    console.log(
-      "       DISCORD CODE MONITOR"
-    );
 
+    log(`
 
-    console.log("");
-
-    log(
-      `Logged in as ${data.user?.username || "Unknown"}
+      Logged in as ${data.user?.username || "Unknown"}
       Bot ID: ${data.user?.id || "Unknown"}
     
     `);
 
-
-    console.log(
-      "Waiting for Discord gift links..."
-    );
 
     return;
   }
@@ -336,12 +300,10 @@ function scanMessage(message) {
 
 async function showDetectedCode(code, message) {
 
-  console.log(
-    "       GIFT CODE DETECTED"
-  );
-
-
+ 
   console.log(`
+
+     GIFT CODE DETECTED
      Code:    ${code}
      Author:  ${message.author?.username || "Unknown"} 
      Channel: ${message.channel_id ||"Unknown"} 
@@ -371,10 +333,6 @@ Gift URL: https://discord.gift/${code}
 
 }
 
-  console.log(
-    "================================="
-  );
-
 }
 
 async function main() {
@@ -385,14 +343,11 @@ async function main() {
      The token is entered at runtime and is not saved
   `);
 
-  token = await ask(
-    "Enter bot token: "
-  );
+  token = await ask("Enter bot token: ");
 
   if (!token) {
-    console.error(
-      "[ERROR] No token entered."
-    );
+
+    console.error("[ERROR] No token entered.");
 
     rl.close();
 
@@ -406,12 +361,10 @@ async function main() {
   connect();
 }
 
-//
+
 main().catch(err => {
-  console.error(
-    "[ERROR]",
-    err.message
-  );
+
+  console.error("[ERROR]", err.message);
 
   rl.close();
 
@@ -421,9 +374,7 @@ main().catch(err => {
 process.on("SIGINT", () => {
   shuttingDown = true;
 
-  console.log(
-    "\nStopping..."
-  );
+  console.log("\nStopping...");
 
   if (heartbeat) {
     clearInterval(heartbeat);
