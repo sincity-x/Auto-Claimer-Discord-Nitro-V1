@@ -1,0 +1,12 @@
+{
+  "name": "discord-code-monitor-console",
+  "version": "1.0.0",
+  "description": "Raw Discord Gateway bot that detects gift links and provides a manual redemption URL.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  }
+}
