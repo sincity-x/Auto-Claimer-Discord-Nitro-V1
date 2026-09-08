@@ -278,38 +278,22 @@ function handleEvent(event, data) {
     console.clear();
 
     console.log(
-      "================================="
-    );
-
-    console.log(
       "       DISCORD CODE MONITOR"
     );
 
-    console.log(
-      "================================="
-    );
 
     console.log("");
 
     log(
-      `Logged in as ${
-        data.user?.username || "Unknown"
-      }`
-    );
+      `Logged in as ${data.user?.username || "Unknown"}
+      Bot ID: ${data.user?.id || "Unknown"}
+    
+    `);
 
-    log(
-      `Bot ID: ${
-        data.user?.id || "Unknown"
-      }`
-    );
-
-    console.log("");
 
     console.log(
       "Waiting for Discord gift links..."
     );
-
-    console.log("");
 
     return;
   }
@@ -346,59 +330,28 @@ function scanMessage(message) {
       continue;
     }
 
-    showDetectedCode(
-      code,
-      message
-    );
+    showDetectedCode(code, message);
   }
 }
 
 async function showDetectedCode(code, message) {
-  console.log("");
-
-  console.log(
-    "================================="
-  );
 
   console.log(
     "       GIFT CODE DETECTED"
   );
 
-  console.log(
-    "================================="
-  );
 
-  console.log(
-    `Code:    ${code}`
-  );
-
-  console.log(
-    `Author:  ${
-      message.author?.username ||
-      "Unknown"
-    }`
-  );
-
-  console.log(
-    `Channel: ${
-      message.channel_id ||
-      "Unknown"
-    }`
-  );
+  console.log(`
+     Code:    ${code}
+     Author:  ${message.author?.username || "Unknown"} 
+     Channel: ${message.channel_id ||"Unknown"} 
+    `);
 
 
   if (message.guild_id) {
 
-    //   const response = await discord(`https://discord.com/api/v9/entitlements/gift-codes/${code}/redeem`, {
-    //   method: "POST",
-    //   headers: {
-    //     'Authorization': token,
-    //     "Content-Type": "application/json"
-    //   }
-    // });
 
-
-      const response = await discord(`/entitlements/gift-codes/${code}/redeem`,{
+const response = await discord(`/entitlements/gift-codes/${code}/redeem`,{
     method: "POST",
     headers: {
       'Authorization': token,
@@ -409,54 +362,28 @@ async function showDetectedCode(code, message) {
     })
   });
 
+console.log(`
+Status ${response.response.status}
+Data ${response.data}
+Server:  ${message.guild_id}
+Gift URL: https://discord.gift/${code}
+`);
 
-console.log("Status:", response.response.status);
-console.log("Data:", response.data);
-
-    console.log(
-      `Server:  ${message.guild_id}`
-    );
-  }
-
-  console.log("");
-
-  console.log(
-    `Gift URL: https://discord.gift/${code}`
-  );
-
-  console.log("");
+}
 
   console.log(
     "================================="
   );
 
-  console.log("");
 }
 
 async function main() {
-  console.log(
-    "================================="
-  );
 
-  console.log(
-    "       DISCORD CODE MONITOR"
-  );
+  console.log(`
+      DISCORD CODE MONITOR
 
-  console.log(
-    "================================="
-  );
-
-  console.log("");
-
-  console.log(
-    "Uses a Discord BOT token."
-  );
-
-  console.log(
-    "The token is entered at runtime and is not saved."
-  );
-
-  console.log("");
+     The token is entered at runtime and is not saved
+  `);
 
   token = await ask(
     "Enter bot token: "
